@@ -3,12 +3,14 @@ from collections import Counter, deque
 import pickle
 import networkx as nx
 import os
-
-# print(os.environ.get('PYDEVD_WARN_EVALUATION_TIMEOUT'))
 os.environ['PYDEVD_WARN_EVALUATION_TIMEOUT'] = '100.0'
 
 
 def filt_add(links, key, deq, graph=None, source=None):
+    '''
+    1. Filter out the urls that are not in caltech domain
+    2. Add edge for the remaining urls
+    '''
     for link in links:
         if key in link:
             deq.append(link)
@@ -25,8 +27,6 @@ def add_edge(graph, source, links, key):
 
 
 if __name__ == '__main__':
-    # res = fetch_links('https://www.caltech.edu/')
-    # print(len(res))
     key_word = 'caltech.edu'
     deq = deque(['https://www.caltech.edu/'])
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     G = nx.Graph()
 
-    # # BFS
+    # build graph with BFS
     while deq:
         source = deq.popleft()
         in_counter[source] += 1
@@ -60,6 +60,7 @@ if __name__ == '__main__':
 
         if len(visited) > max_pages:
             break
+    # compute statistics of the graph
     avg_cluster = nx.average_clustering(G)
     overall_cluster = nx.transitivity(G)
     print(
